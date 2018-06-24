@@ -1,10 +1,10 @@
 package kmeans;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
 
 /**,
  * KMeans - Classe principal.
@@ -92,7 +92,7 @@ public class KMeans {
         if (pivos == null) {
             pivos = new double[7];
             for (int i = 0; i < 7; i++) {
-                pivos[i] = retornaRandom(i);
+                pivos[i] = retornaPivo(i);
             }
         } else {
             for (int i = 0; i < 7; i++) {
@@ -101,14 +101,15 @@ public class KMeans {
         }
     }
 
-    public static int retornaRandom(int pivo) {
+    public static int retornaPivo(int pivo) {
         int valor = -1;
-        Random rand = new Random();
+        int id = 1;
         do {
-            valor = pessoas.get((rand.nextInt(pessoas.size()) + 1)).getIdade();
+            valor = pessoas.get(id).getIdade();
             for (int i = 0; i < pivo; i++) {
                 if (valor == pivos[i]) {
                     valor = -1;
+                    id++;
                 }
             }
         } while (valor == -1);
@@ -142,15 +143,28 @@ public class KMeans {
     public static void salvarGrupos(){
         for (ArrayList i : gruposAtuais) {
             int cont = 0;
-            String idades = " ";
+            String texto = "";
             for (Object j : i) {
                 cont++;
-                int chave = Integer.parseInt(j.toString());
-                int idade = pessoas.get(chave).getIdade();
-                idades = idades.concat(" " + idade);
+                Pessoa pessoa = pessoas.get(Integer.parseInt(j.toString()));
+                texto = texto.concat(pessoa.getId()+"::"+pessoa.getSexo()+"::"+pessoa.getIdade()+"::"+pessoa.getOcupacao()+"::"+pessoa.getCodigoPostal()+"\n");
             }
-            idades = (cont + "\t| ").concat(idades);
-            System.out.println(idades);
+            texto = texto.trim();
+            String nomeGrupo = "Grupo" + (gruposAtuais.indexOf(i)+1);
+            String nomeArquivo = nomeGrupo + "_" + cont + "_" + nomeGrupo + ".txt";
+            criaArquivo(nomeArquivo, texto);
+        }
+    }
+    
+    public static void criaArquivo(String nomeArquivo, String conteudo){
+        try {
+            File arquivo = new File(nomeArquivo);
+            arquivo.delete();
+            RandomAccessFile novoArquivo = new RandomAccessFile(arquivo, "rw");
+            novoArquivo.writeBytes(conteudo);
+            System.out.println("Criado o arquivo " + nomeArquivo);
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
         }
     }
 }
