@@ -20,33 +20,17 @@ public class KMeans {
     public static void main(String[] args) {
         iniciarListas();
         lerArquivo();
-        while (gruposDiferentes()) {
-            gruposAnteriores = clonarGruposAtuais();
-            setarPivos();
-            resetaGrupos();
-            for (int i = 1; i <= pessoas.size(); i++) {
-                int grupo = encontrarMaisProximo(pessoas.get(i).getIdade());
-                gruposAtuais.get(grupo).add(i);
-            }
-        }
-        int cont = 0;
-        for (ArrayList i : gruposAtuais) {
-            String idades = " ";
-            for (Object j : i) {
-                cont++;
-                int chave = Integer.parseInt(j.toString());
-                int idade = pessoas.get(chave).getIdade();
-                idades = idades.concat(" " + idade);
-            }
-            idades = (cont + "\t| ").concat(idades);
-            System.out.println(idades);
-            cont = 0;
-        }
+        realizarKMeans();
+        salvarGrupos();
     }
 
     public static void iniciarListas() {
         pessoas = new HashMap();
         gruposAnteriores = new ArrayList();
+        iniciarGruposAtuais();
+    }
+    
+    public static void iniciarGruposAtuais(){
         gruposAtuais = new ArrayList();
         gruposAtuais.add(new ArrayList());
         gruposAtuais.add(new ArrayList());
@@ -72,7 +56,19 @@ public class KMeans {
                 pessoas.put(id, novaPessoa);
             }
         } catch (IOException ex) {
-            System.out.println("ERRO");
+            System.out.println(ex.getMessage());
+        }
+    }
+        
+    public static void realizarKMeans(){
+        while (gruposDiferentes()) {
+            gruposAnteriores = clonarGruposAtuais();
+            setarPivos();
+            iniciarGruposAtuais();
+            for (int i = 1; i <= pessoas.size(); i++) {
+                int grupo = encontrarMaisProximo(pessoas.get(i).getIdade());
+                gruposAtuais.get(grupo).add(i);
+            }
         }
     }
 
@@ -90,17 +86,6 @@ public class KMeans {
             clone.add(grupo);
         }
         return clone;
-    }
-
-    public static void resetaGrupos() {
-        gruposAtuais = new ArrayList();
-        gruposAtuais.add(new ArrayList());
-        gruposAtuais.add(new ArrayList());
-        gruposAtuais.add(new ArrayList());
-        gruposAtuais.add(new ArrayList());
-        gruposAtuais.add(new ArrayList());
-        gruposAtuais.add(new ArrayList());
-        gruposAtuais.add(new ArrayList());
     }
 
     public static void setarPivos() {
@@ -152,5 +137,20 @@ public class KMeans {
             }
         }
         return maisProximo;
+    }
+    
+    public static void salvarGrupos(){
+        for (ArrayList i : gruposAtuais) {
+            int cont = 0;
+            String idades = " ";
+            for (Object j : i) {
+                cont++;
+                int chave = Integer.parseInt(j.toString());
+                int idade = pessoas.get(chave).getIdade();
+                idades = idades.concat(" " + idade);
+            }
+            idades = (cont + "\t| ").concat(idades);
+            System.out.println(idades);
+        }
     }
 }
