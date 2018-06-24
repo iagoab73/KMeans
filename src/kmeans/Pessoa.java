@@ -1,7 +1,7 @@
 package kmeans;
 
 /**
- *
+ * Pessoa - Classe com os atributos de Pessoa.
  * @author Iago
  */
 public class Pessoa {
